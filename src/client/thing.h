@@ -24,7 +24,7 @@
 
 #include "attachableobject.h"
 #include "staticdata.h"
-
+#include "const.h"
  // @bindclass
 #pragma pack(push,1) // disable memory alignment
 class Thing : public AttachableObject
@@ -242,6 +242,7 @@ protected:
     // Shader
     uint8_t m_shaderId{ 0 };
  uint8_t m_stackPriority{ COMMON_ITEMS };
+bool m_isSingleDimension{ false };
 private:
     void lua_setMarked(const std::string_view color) { setMarked(Color(color)); }
     void lua_setHighlight(const std::string_view color) { setHighlight(Color(color)); }
