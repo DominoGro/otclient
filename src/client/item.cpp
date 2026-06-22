@@ -252,14 +252,14 @@ int Item::calculateAnimationPhase()
 {
      if (!m_hasAnimationPhases || !canAnimate()) return 0;
 
-    if (getIdleAnimator()) return getIdleAnimator()->getPhase();
-
+     if (m_cachedIdleAnimator) return m_cachedIdleAnimator->getPhase();
+ const int tpf = g_gameConfig.getItemTicksPerFrame();
     if (m_async) {
-        return (g_clock.millis() % (g_gameConfig.getItemTicksPerFrame() * getAnimationPhases())) / g_gameConfig.getItemTicksPerFrame();
+         return (g_clock.millis() % (tpf * m_animationPhases)) / tpf;
     }
 
-    if (g_clock.millis() - m_lastPhase >= g_gameConfig.getItemTicksPerFrame()) {
-        m_phase = (m_phase + 1) % getAnimationPhases();
+     if (g_clock.millis() - m_lastPhase >= tpf) {
+        m_phase = (m_phase + 1) % m_animationPhases;
         m_lastPhase = g_clock.millis();
     }
 
@@ -276,22 +276,31 @@ void Item::setId(uint32_t id)
 #endif
 
     m_clientId = id;
-// Cache per-type flags used in hot draw paths.
+    // Cache per-type flags used in hot draw paths.
     if (const auto* t = getThingType()) {
+        m_isValidAndOpaque = m_clientId > 0 && t->getOpacity() > Fw::MIN_ALPHA;
+   
+// Cache per-type flags used in hot draw paths.
+    
         if (t->isGround())            m_stackPriority = GROUND;
         else if (t->isGroundBorder()) m_stackPriority = GROUND_BORDER;
         else if (t->isOnBottom())     m_stackPriority = ON_BOTTOM;
         else if (t->isOnTop())        m_stackPriority = ON_TOP;
         else                          m_stackPriority = COMMON_ITEMS;
 
-        m_hasAnimationPhases = t->getAnimationPhases() > 1;
+        m_animationPhases = static_cast<uint8_t>(t->getAnimationPhases());
+        m_hasAnimationPhases = m_animationPhases > 1;
+        m_cachedIdleAnimator = t->getIdleAnimator();
          m_isSingleDimension = t->isSingleDimension();
          m_cachedElevation = static_cast<uint8_t>(t->getElevation());
     } else {
+         m_isValidAndOpaque = false;
         m_stackPriority = COMMON_ITEMS;
         m_hasAnimationPhases = false;
         m_isSingleDimension = false;
         m_cachedElevation = 0;
+        m_animationPhases = 0;
+        m_cachedIdleAnimator = nullptr;
     }
     // Shader example on only items that can be marketed.
     /*
