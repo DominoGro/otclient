@@ -64,7 +64,7 @@ public:
     virtual bool isPlayer() const { return false; }
     virtual bool isLocalPlayer() const { return false; }
 
-    bool isCommon() { return !isGround() && !isGroundBorder() && !isOnTop() && !isCreature() && !isOnBottom(); }
+    bool isCommon() { return m_stackPriority == COMMON_ITEMS; }
     void canDraw(const bool canDraw) { m_canDraw = canDraw; }
 
     Animator* getAnimator() const;
@@ -241,7 +241,7 @@ protected:
 
     // Shader
     uint8_t m_shaderId{ 0 };
-
+ uint8_t m_stackPriority{ COMMON_ITEMS };
 private:
     void lua_setMarked(const std::string_view color) { setMarked(Color(color)); }
     void lua_setHighlight(const std::string_view color) { setHighlight(Color(color)); }
