@@ -90,9 +90,8 @@ void Item::internalDraw(const int animationPhase, const Point& dest, const Color
 
 void Item::drawLight(const Point& dest, LightView* lightView) {
     if (!lightView) return;
-    const auto* t = getThingType();
-    if (t && t->hasLight())
-        t->draw(dest, 0, m_numPatternX, m_numPatternY, m_numPatternZ, 0, Color::white, false, lightView);
+    if (m_hasLight)
+        getThingType()->draw(dest, 0, m_numPatternX, m_numPatternY, m_numPatternZ, 0, Color::white, false, lightView);
     drawAttachedLightEffect(dest, lightView);
 }
 
@@ -290,6 +289,7 @@ void Item::setId(uint32_t id)
 
         m_animationPhases = static_cast<uint8_t>(t->getAnimationPhases());
         m_hasAnimationPhases = m_animationPhases > 1;
+         m_hasLight = t->hasLight();
         m_cachedIdleAnimator = t->getIdleAnimator();
          m_isSingleDimension = t->isSingleDimension();
          m_cachedElevation = static_cast<uint8_t>(t->getElevation());
@@ -300,6 +300,7 @@ void Item::setId(uint32_t id)
         m_isSingleDimension = false;
         m_cachedElevation = 0;
         m_animationPhases = 0;
+        m_hasLight = false;
         m_cachedIdleAnimator = nullptr;
     }
     // Shader example on only items that can be marketed.
