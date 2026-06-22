@@ -124,16 +124,18 @@ namespace stdext
 
         iterator insert(iterator pos, const T& v) {
             const size_t idx = pos - buf();
-            if (m_size == m_capacity) grow();
+            //if (m_size == m_capacity) grow();
+             emplace_back(v);  // handles grow + size increment
             T* p = buf();
-            // shift elements right
-            if (m_size > idx) {
-                new(p + m_size) T(std::move(p[m_size - 1]));
-                std::move_backward(p + idx, p + m_size - 1, p + m_size);
-                p[idx].~T();
-            }
-            new(p + idx) T(v);
-            ++m_size;
+            //// shift elements right
+            //if (m_size > idx) {
+               // new(p + m_size) T(std::move(p[m_size - 1]));
+               // std::move_backward(p + idx, p + m_size - 1, p + m_size);
+               // p[idx].~T();
+          //  }
+            //new(p + idx) T(v);
+           // ++m_size;
+             std::rotate(p + idx, p + m_size - 1, p + m_size);
             return p + idx;
         }
 
