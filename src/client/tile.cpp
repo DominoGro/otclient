@@ -88,8 +88,10 @@ void Tile::draw(const Point& dest, const int flags, LightView* lightView)
 
     if (hasCommonItem()) {
         for (auto& item : std::ranges::reverse_view(m_things)) {
-            if (!item->isCommon()) continue;
-            drawThing(item, dest, flags, drawElevation);
+           if (item->isCommon())
+                drawThing(item, dest, flags, drawElevation);
+            else if (!item->isCreature())
+                break; // past priority-4 (creatures) means no more common items
         }
     }
 
@@ -190,8 +192,10 @@ void Tile::drawTop(const Point& dest, const int flags, const bool forceDraw, uin
 
     if (hasTopItem()) {
         for (const auto& item : m_things) {
-            if (!item->isOnTop()) continue;
-            drawThing(item, dest, flags & Otc::DrawThings, drawElevation);
+           if (item->isOnTop())
+                drawThing(item, dest, flags & Otc::DrawThings, drawElevation);
+            else if (item->isCreature() || item->isCommon())
+                break; // onTop items precede priority-4/5; nothing more to find
         }
     }
 }
