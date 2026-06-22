@@ -110,9 +110,12 @@ void Tile::draw(const Point& dest, const int flags, LightView* lightView)
 void Tile::drawLight(const Point& dest, LightView* lightView) {
     uint8_t drawElevation = 0;
 
-    for (const auto& thing : m_things) {
-        if (thing->isCreature()) continue;
-
+   // for (const auto& thing : m_things) {
+       // if (thing->isCreature()) continue;
+        for(int i = 0, sz = static_cast<int>(m_things.size()); i < sz; ++i){
+            if(i >= m_firstCreatureIndex && i <= m_lastCreatureIndex && m_firstCreatureIndex >= 0)
+                continue;
+            const auto& thing = m_things[i];
         thing->drawLight(dest - drawElevation * g_drawPool.getScaleFactor(), lightView);
         updateElevation(thing, drawElevation);
     }
