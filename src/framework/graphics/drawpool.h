@@ -358,7 +358,7 @@ private:
 
     TextureAtlasPtr m_atlas;
     std::atomic_bool m_shouldRepaint{ false };
-
+    bool m_framebufferCurrent{ false }; // true when framebuffer content is unchanged and FPS limit not elapsed
     SpinLock m_threadLock;
 
     friend class DrawPoolManager;
