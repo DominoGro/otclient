@@ -23,7 +23,7 @@
 #pragma once
 
 #include <framework/luaengine/luaobject.h>
-
+#include <framework/stdext/storage.h>
 #include "attachableobject.h"
 #include "declarations.h"
 #include "staticdata.h"
@@ -180,8 +180,8 @@ private:
     bool hasThingWithElevation() { return hasElevation() && m_thingTypeFlag & HAS_THING_WITH_ELEVATION; }
     void markHighlightedThing(const Color& color);
 
-    std::vector<CreaturePtr> m_walkingCreatures;
-    std::vector<ThingPtr> m_things;
+    stdext::SmallVector<CreaturePtr, 4> m_walkingCreatures;
+    stdext::SmallVector<ThingPtr, 8> m_things;
 
     std::unique_ptr<std::vector<EffectPtr>> m_effects;
     std::unique_ptr<std::vector<TilePtr>> m_tilesRedraw;
