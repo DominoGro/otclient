@@ -53,27 +53,15 @@ void Thing::setPosition(const Position& position, uint8_t /*stackPos*/)
 
 int Thing::getStackPriority()
 {
-    // Bug fix for old versions
+    // Bug fix for old versions: splashes were treated as ground in old clients.
     if (g_game.getClientVersion() <= 800 && isSplash())
         return GROUND;
-
-    if (isGround())
-        return GROUND;
-
-    if (isGroundBorder())
-        return GROUND_BORDER;
-
-    if (isOnBottom())
-        return ON_BOTTOM;
-
-    if (isOnTop())
-        return ON_TOP;
 
     if (isCreature())
         return CREATURE;
 
     // common items
-    return COMMON_ITEMS;
+     return m_stackPriority;
 }
 
 const TilePtr& Thing::getTile()
