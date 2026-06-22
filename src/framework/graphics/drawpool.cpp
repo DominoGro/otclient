@@ -279,12 +279,13 @@ bool DrawPool::canRepaint()
 
 void DrawPool::release() {
     if (hasFrameBuffer() && !m_hashCtrl.wasModified() && !canRefresh()) {
+        m_framebufferCurrent = true;
         for (auto& objs : m_objects)
             objs.clear();
         m_objectsFlushed.clear();
         return;
     }
-
+    m_framebufferCurrent = false;
     m_refreshTimer.restart();
 
     SpinLock::Guard guard(m_threadLock);
