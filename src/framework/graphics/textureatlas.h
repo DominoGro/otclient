@@ -141,8 +141,10 @@ private:
     struct
     {
         std::vector<Layer> layers;
-        std::set<FreeRegion> freeRegions;
-        std::map<int, std::set<FreeRegion>> freeRegionsBySize;
+        //std::set<FreeRegion> freeRegions;
+        //std::map<int, std::set<FreeRegion>> freeRegionsBySize;
+        phmap::btree_set<FreeRegion> freeRegions;
+        phmap::btree_map<int, phmap::btree_set<FreeRegion>> freeRegionsBySize;
         phmap::flat_hash_map<std::pair<int, int>, std::vector<std::unique_ptr<AtlasRegion>>, PairHash> inactiveTextures;
     } m_filterGroups[AtlasFilter::ATLAS_FILTER_COUNT];
 
