@@ -189,7 +189,8 @@ private:
     bool m_async{ true };
     bool m_hasAnimationPhases{ false };
     std::string m_tooltip;
-
+ uint8_t m_animationPhases{ 0 };
+    Animator* m_cachedIdleAnimator{ nullptr };
 #ifdef FRAMEWORK_EDITOR
     uint16_t m_serverId{ 0 };
     stdext::dynamic_storage<ItemAttr> m_attribs;
