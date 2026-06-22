@@ -160,8 +160,8 @@ private:
 
     struct MapObject
     {
-        std::vector<TilePtr> shades;
-        std::vector<TilePtr> tiles;
+        std::vector<Tile*> shades;
+        std::vector<Tile*> tiles;
         void clear() { shades.clear(); tiles.clear(); }
     };
 
