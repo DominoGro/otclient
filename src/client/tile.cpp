@@ -133,8 +133,15 @@ void Tile::drawCreature(const Point& dest, const int flags, const bool forceDraw
         return;
 
     bool localPlayerDrawed = false;
-    if (hasCreatures()) {
-        for (const auto& thing : m_things) {
+    if (hasCreatures() && m_firstCreatureIndex >= 0 && m_lastCreatureIndex >= 0) {
+       // for (const auto& thing : m_things) {
+        const auto size = static_cast<int32_t>(m_things.size());
+        const auto beginOffset = size - 1 - m_lastCreatureIndex;
+        const auto endOffset = size - m_firstCreatureIndex;
+        auto it = m_things.rbegin() + beginOffset;
+        const auto end = m_things.rbegin() + endOffset;
+        for(; it != end; ++it){
+            const auto& thing = *it;
             if (!thing->isCreature() || thing->static_self_cast<Creature>()->isWalking()) continue;
 
             if (thing->isLocalPlayer()) {
