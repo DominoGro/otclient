@@ -43,25 +43,28 @@ void updateElevation(const ThingPtr& thing, uint8_t& drawElevation) {
         drawElevation = std::min<uint8_t>(drawElevation + thing->getElevation(), g_gameConfig.getTileMaxElevation());
 }
 
-void drawThing(const ThingPtr& thing, const Point& dest, const int flags, uint8_t& drawElevation, LightView* lightView = nullptr)
+void drawThing(const ThingPtr& thing, const Point& dest, const int flags, uint8_t& drawElevation, LightView* lightView = nullptr, DrawOrder knownOrder = DrawOrder::LAST)
 {
     const auto& newDest = dest - drawElevation * g_drawPool.getScaleFactor();
 
     if (flags == Otc::DrawLights)
         thing->drawLight(newDest, lightView);
     else {
-        if (thing->isSingleGround())
-            g_drawPool.setDrawOrder(DrawOrder::FIRST);
-        else if (thing->isSingleGroundBorder())
-            g_drawPool.setDrawOrder(DrawOrder::SECOND);
-        else if (thing->isEffect() && g_app.isDrawingEffectsOnTop())
-            g_drawPool.setDrawOrder(DrawOrder::FOURTH);
-        else
-            g_drawPool.setDrawOrder(DrawOrder::THIRD);
-
+        DrawOrder order;
+        if (knownOrder != DrawOrder::LAST) {
+            order = knownOrder;
+        } else if (thing->isSingleGround()) {
+            order = DrawOrder::FIRST;
+        } else if (thing->isSingleGroundBorder()) {
+            order = DrawOrder::SECOND;
+        } else if (thing->isEffect() && g_app.isDrawingEffectsOnTop()) {
+            order = DrawOrder::FOURTH;
+        } else {
+            order = DrawOrder::THIRD;
+        }
+        g_drawPool.setDrawOrder(order);
         thing->draw(newDest, flags & Otc::DrawThings, lightView);
         updateElevation(thing, drawElevation);
-
         g_drawPool.resetDrawOrder();
     }
 }
@@ -89,7 +92,7 @@ void Tile::draw(const Point& dest, const int flags, LightView* lightView)
     if (hasCommonItem()) {
         for (auto& item : std::ranges::reverse_view(m_things)) {
            if (item->isCommon())
-                drawThing(item, dest, flags, drawElevation);
+                 drawThing(item, dest, flags, drawElevation, nullptr, DrawOrder::THIRD);
             else if (!item->isCreature())
                 break; // past priority-4 (creatures) means no more common items
         }
@@ -200,7 +203,7 @@ void Tile::drawTop(const Point& dest, const int flags, const bool forceDraw, uin
     if (hasTopItem()) {
         for (const auto& item : m_things) {
            if (item->isOnTop())
-                drawThing(item, dest, flags & Otc::DrawThings, drawElevation);
+                drawThing(item, dest, flags & Otc::DrawThings, drawElevation, nullptr, DrawOrder::THIRD);
             else if (item->isCreature() || item->isCommon())
                 break; // onTop items precede priority-4/5; nothing more to find
         }
