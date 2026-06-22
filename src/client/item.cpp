@@ -90,7 +90,9 @@ void Item::internalDraw(const int animationPhase, const Point& dest, const Color
 
 void Item::drawLight(const Point& dest, LightView* lightView) {
     if (!lightView) return;
-    getThingType()->draw(dest, 0, m_numPatternX, m_numPatternY, m_numPatternZ, 0, Color::white, false, lightView);
+    const auto* t = getThingType();
+    if (t && t->hasLight())
+        t->draw(dest, 0, m_numPatternX, m_numPatternY, m_numPatternZ, 0, Color::white, false, lightView);
     drawAttachedLightEffect(dest, lightView);
 }
 
