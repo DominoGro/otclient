@@ -228,10 +228,11 @@ R LuaObject::callLuaField(const std::string_view field, const T&... args)
 template<typename... T>
 void LuaObject::callLuaField(const std::string_view field, const T&... args)
 {
-    const std::string fieldStr = field.data();
+    //const std::string fieldStr = field.data();
 
     // Avoids unnecessary overhead by checking if the field is registered before invoking the Lua event.
-    auto it = m_events.find(fieldStr);
+    auto it = m_events.find(field);
+ 
     if (it != m_events.end() && !it->second)
         return;
 
@@ -240,7 +241,8 @@ void LuaObject::callLuaField(const std::string_view field, const T&... args)
         g_lua.pop(rets);
 
     if (it == m_events.end())
-        m_events[fieldStr] = rets > -1;
+       // m_events[fieldStr] = rets > -1;
+      m_events.emplace(std::string(field), rets > -1);
 }
 
 template<typename... T>
