@@ -243,6 +243,7 @@ protected:
     uint8_t m_shaderId{ 0 };
  uint8_t m_stackPriority{ COMMON_ITEMS };
 bool m_isSingleDimension{ false };
+uint8_t m_cachedElevation{ 0 };
 private:
     void lua_setMarked(const std::string_view color) { setMarked(Color(color)); }
     void lua_setHighlight(const std::string_view color) { setHighlight(Color(color)); }
