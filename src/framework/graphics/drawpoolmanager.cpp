@@ -197,10 +197,12 @@ void DrawPoolManager::preDraw(const DrawPoolType type, const std::function<void(
 {
     select(type);
     const auto pool = getCurrentPool();
-
+     // Skip CPU traversal when framebuffer is current (hash unchanged, FPS limit not elapsed).
+    // Worst-case latency = 1/pool FPS (100ms for FOREGROUND at 10 FPS) — imperceptible for UI.
+    const bool skipCpuTraversal = pool->hasFrameBuffer() && pool->m_framebufferCurrent && !pool->canRefresh();
     pool->resetState();
 
-    if (f) f();
+    if (f && !skipCpuTraversal) f();
 
     if (beforeRelease)
         beforeRelease();
