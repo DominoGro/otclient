@@ -253,11 +253,7 @@ int Thing::getLensHelp() const {
         return t->getLensHelp();
     return 0;
 }
-int Thing::getElevation() const {
-    if (const auto t = getThingType(); t)
-        return t->getElevation();
-    return 0;
-}
+int Thing::getElevation() const { return m_cachedElevation; }
 
 int Thing::getClothSlot() {
     if (const auto t = getThingType(); t)
@@ -480,11 +476,7 @@ bool Thing::hasDisplacement() const {
         return t->hasDisplacement();
     return false;
 }
-bool Thing::hasElevation() const {
-    if (const auto t = getThingType(); t)
-        return t->hasElevation();
-    return false;
-}
+bool Thing::hasElevation() const { return m_cachedElevation > 0; }
 bool Thing::hasFloorChange() const
 {
     if (const auto t = getThingType(); t)
