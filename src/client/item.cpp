@@ -285,6 +285,7 @@ void Item::setId(uint32_t id)
         else                          m_stackPriority = COMMON_ITEMS;
 
         m_hasAnimationPhases = t->getAnimationPhases() > 1;
+         m_isSingleDimension = t->isSingleDimension();
     } else {
         m_stackPriority = COMMON_ITEMS;
         m_hasAnimationPhases = false;
