@@ -187,6 +187,7 @@ private:
     ticks_t m_lastPhase{ 0 };
 
     bool m_async{ true };
+    bool m_hasAnimationPhases{ false };
     std::string m_tooltip;
 
 #ifdef FRAMEWORK_EDITOR
