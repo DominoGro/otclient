@@ -236,7 +236,7 @@ private:
     struct FloorData
     {
         std::vector<MissilePtr> missiles;
-        std::unordered_map<uint32_t, TileBlock > tileBlocks;
+        phmap::flat_hash_map<uint32_t, TileBlock > tileBlocks;
     };
 
     void removeUnawareThings();
