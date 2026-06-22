@@ -287,16 +287,8 @@ bool Thing::isTopGroundBorder() {
         return t->isTopGroundBorder();
     return false;
 }
-bool Thing::isSingleGround() {
-    if (const auto t = getThingType(); !isCreature() && t)
-        return t->isSingleGround();
-    return false;
-}
-bool Thing::isSingleGroundBorder() {
-    if (const auto t = getThingType(); !isCreature() && t)
-        return t->isSingleGroundBorder();
-    return false;
-}
+bool Thing::isSingleGround() { return m_stackPriority == GROUND && m_isSingleDimension; }
+bool Thing::isSingleGroundBorder() { return m_stackPriority == GROUND_BORDER && m_isSingleDimension; }
 bool Thing::isGround() { return m_stackPriority == GROUND; }
 bool Thing::isGroundBorder() { return m_stackPriority == GROUND_BORDER; }
 bool Thing::isOnBottom() { return m_stackPriority == ON_BOTTOM; }
