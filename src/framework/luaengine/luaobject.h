@@ -92,9 +92,18 @@ public:
     std::shared_ptr<T> dynamic_self_cast() { return std::dynamic_pointer_cast<T>(shared_from_this()); }
 
 private:
+struct StringViewHash{
+ using is_transparent = void;
+ size_t operator()(std::string_view sv) const { return phmap::HashState().combine(0, sv); }
+ size_t operator()(const std::string& s) const { return phmap::HashState().combine(0, std::string_view(s)); }
+};
+struct StringViewEqual {
+        using is_transparent = void;
+        bool operator()(std::string_view a, std::string_view b) const { return a == b; }
+    };
     int m_fieldsTableRef;
-    std::unordered_map<std::string, bool> m_events;
-
+    //std::unordered_map<std::string, bool> m_events;
+    phmap::flat_hash_map<std::string, bool, StringViewHash, StringViewEqual> m_events;
     friend class LuaInterface;
 };
 
