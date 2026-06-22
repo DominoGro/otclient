@@ -111,17 +111,24 @@ void Tile::draw(const Point& dest, const int flags, LightView* lightView)
 
 void Tile::drawLight(const Point& dest, LightView* lightView) {
     uint8_t drawElevation = 0;
+    
+        //for(int i = 0, sz = static_cast<int>(m_things.size()); i < sz; ++i){
+          //  if(i >= m_firstCreatureIndex && i <= m_lastCreatureIndex && m_firstCreatureIndex >= 0)
+                //continue;
+     const int sz = static_cast<int>(m_things.size());
+    const int creatureBegin = (m_firstCreatureIndex >= 0) ? m_firstCreatureIndex : sz;
+    const int creatureEnd   = (m_lastCreatureIndex  >= 0) ? m_lastCreatureIndex + 1 : sz;
 
-   // for (const auto& thing : m_things) {
-       // if (thing->isCreature()) continue;
-        for(int i = 0, sz = static_cast<int>(m_things.size()); i < sz; ++i){
-            if(i >= m_firstCreatureIndex && i <= m_lastCreatureIndex && m_firstCreatureIndex >= 0)
-                continue;
+    for (int i = 0; i < creatureBegin; ++i) {
             const auto& thing = m_things[i];
         thing->drawLight(dest - drawElevation * g_drawPool.getScaleFactor(), lightView);
         updateElevation(thing, drawElevation);
     }
-
+for (int i = creatureEnd; i < sz; ++i) {
+        const auto& thing = m_things[i];
+        thing->drawLight(dest - drawElevation * g_drawPool.getScaleFactor(), lightView);
+        updateElevation(thing, drawElevation);
+    }
     drawCreature(dest, Otc::DrawLights, true, drawElevation, lightView);
 
     if (m_effects) {
