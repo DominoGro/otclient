@@ -250,7 +250,7 @@ void Item::updatePatterns()
 
 int Item::calculateAnimationPhase()
 {
-    if (!hasAnimationPhases() || !canAnimate()) return 0;
+     if (!m_hasAnimationPhases || !canAnimate()) return 0;
 
     if (getIdleAnimator()) return getIdleAnimator()->getPhase();
 
@@ -276,7 +276,19 @@ void Item::setId(uint32_t id)
 #endif
 
     m_clientId = id;
+// Cache per-type flags used in hot draw paths.
+    if (const auto* t = getThingType()) {
+        if (t->isGround())            m_stackPriority = GROUND;
+        else if (t->isGroundBorder()) m_stackPriority = GROUND_BORDER;
+        else if (t->isOnBottom())     m_stackPriority = ON_BOTTOM;
+        else if (t->isOnTop())        m_stackPriority = ON_TOP;
+        else                          m_stackPriority = COMMON_ITEMS;
 
+        m_hasAnimationPhases = t->getAnimationPhases() > 1;
+    } else {
+        m_stackPriority = COMMON_ITEMS;
+        m_hasAnimationPhases = false;
+    }
     // Shader example on only items that can be marketed.
     /*
     if (isMarketable()) {
