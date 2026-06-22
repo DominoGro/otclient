@@ -580,9 +580,7 @@ std::vector<uint32_t> Thing::getRestrictVocation() const {
 }
 
 bool Thing::canDraw(const Color& color) const {
-    if (const auto t = getThingType(); t)
-        return m_canDraw && m_clientId > 0 && color.aF() > Fw::MIN_ALPHA && t->getOpacity() > Fw::MIN_ALPHA;
-    return false;
+   return m_canDraw && m_isValidAndOpaque && color.aF() > Fw::MIN_ALPHA;
 }
 
 const Color& Thing::getMarkedColor() {
