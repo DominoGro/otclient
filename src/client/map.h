@@ -249,7 +249,7 @@ private:
     std::vector<StaticTextPtr> m_staticTexts;
     std::vector<MapViewPtr> m_mapViews;
 
-    std::unordered_map<uint32_t, CreaturePtr> m_knownCreatures;
+     phmap::flat_hash_map<uint32_t, CreaturePtr> m_knownCreatures;
 
     std::unordered_map<UIWidgetPtr, AttachableObjectPtr> m_attachedObjectWidgetMap;
 
