@@ -286,9 +286,12 @@ void Item::setId(uint32_t id)
 
         m_hasAnimationPhases = t->getAnimationPhases() > 1;
          m_isSingleDimension = t->isSingleDimension();
+         m_cachedElevation = static_cast<uint8_t>(t->getElevation());
     } else {
         m_stackPriority = COMMON_ITEMS;
         m_hasAnimationPhases = false;
+        m_isSingleDimension = false;
+        m_cachedElevation = 0;
     }
     // Shader example on only items that can be marketed.
     /*
