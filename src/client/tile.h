@@ -178,10 +178,10 @@ private:
     }
 
     bool hasThingWithElevation() { return hasElevation() && m_thingTypeFlag & HAS_THING_WITH_ELEVATION; }
-    void markHighlightedThing(const Color& color);
+    void markHighlightedThing(const Color& color);   
 
-    stdext::SmallVector<CreaturePtr, 4> m_walkingCreatures;
-    stdext::SmallVector<ThingPtr, 8> m_things;
+    std::vector<CreaturePtr> m_walkingCreatures;
+    stdext::SmallVector<ThingPtr, 10> m_things;
 
     std::unique_ptr<std::vector<EffectPtr>> m_effects;
     std::unique_ptr<std::vector<TilePtr>> m_tilesRedraw;
