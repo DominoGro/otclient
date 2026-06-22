@@ -370,12 +370,12 @@ void MapView::updateVisibleTiles()
                         }
 
                         if (addTile) {
-                            floor.tiles.emplace_back(tile);
+                            floor.tiles.emplace_back(tile.get());
                             tile->onAddInMapView();
                         }
 
                         if (isDrawingLights() && tile->canShade()) {
-                            floor.shades.emplace_back(tile);
+                            floor.shades.emplace_back(tile.get());
                         }
 
                         if (addTile || !floor.shades.empty()) {
@@ -417,8 +417,8 @@ void MapView::updateVisibleTiles()
 
             for (auto i = 0; i < numThreads; ++i) {
                 auto& floorThread = m_floorThreads[i][fi];
-                floor.cachedVisibleTiles.tiles.insert(floor.cachedVisibleTiles.tiles.end(), std::make_move_iterator(floorThread.cachedVisibleTiles.tiles.begin()), std::make_move_iterator(floorThread.cachedVisibleTiles.tiles.end()));
-                floor.cachedVisibleTiles.shades.insert(floor.cachedVisibleTiles.shades.end(), std::make_move_iterator(floorThread.cachedVisibleTiles.shades.begin()), std::make_move_iterator(floorThread.cachedVisibleTiles.shades.end()));
+                floor.cachedVisibleTiles.tiles.insert(floor.cachedVisibleTiles.tiles.end(), floorThread.cachedVisibleTiles.tiles.begin(), floorThread.cachedVisibleTiles.tiles.end());
+                floor.cachedVisibleTiles.shades.insert(floor.cachedVisibleTiles.shades.end(), floorThread.cachedVisibleTiles.shades.begin(), floorThread.cachedVisibleTiles.shades.end());
             }
         }
     } else {
