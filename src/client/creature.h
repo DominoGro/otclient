@@ -128,7 +128,7 @@ public:
     Otc::Direction getDirection() { return m_direction; }
     const auto& getOutfit() { return m_outfit; }
     const Light& getLight() const override;
-    bool hasLight() const override { return Thing::hasLight() || getLight().intensity > 0; }
+    bool hasLight() const override { return m_typeLight.intensity > 0 || getLight().intensity > 0; }
     bool hasMountShader() const { return m_mountShaderId > 0; }
 
     Point getDisplacement() const override;
