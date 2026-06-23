@@ -922,6 +922,18 @@ void Creature::setOutfit(const Outfit& outfit, bool fireEvent)
     }
 
     m_clientId = thingType->getId();
+     if (m_outfit.isEffect())
+        m_cachedDisplacement = { 8, 8 };
+    else if (m_outfit.isItem())
+        m_cachedDisplacement = {};
+    else if (m_outfit.hasMount()) {
+        if (const auto* mountType = getMountThingType())
+            m_cachedDisplacement = mountType->getDisplacement();
+        else
+            m_cachedDisplacement = thingType->getDisplacement();
+    } else {
+        m_cachedDisplacement = thingType->getDisplacement();
+    }
 
     if (m_outfit.hasMount()) {
         m_numPatternZ = std::min<int>(1, getNumPatternZ() - 1);
@@ -1141,44 +1153,9 @@ uint16_t Creature::getStepDuration(const bool ignoreDiagonal, const Otc::Directi
     return duration;
 }
 
-Point Creature::getDisplacement() const
-{
-    if (m_outfit.isEffect())
-        return { 8 };
-
-    if (m_outfit.isItem())
-        return {};
-
-    return Thing::getDisplacement();
-}
-
-int Creature::getDisplacementX() const
-{
-    if (m_outfit.isEffect())
-        return 8;
-
-    if (m_outfit.isItem())
-        return 0;
-
-    if (m_outfit.hasMount())
-        return getMountThingType()->getDisplacementX();
-
-    return Thing::getDisplacementX();
-}
-
-int Creature::getDisplacementY() const
-{
-    if (m_outfit.isEffect())
-        return 8;
-
-    if (m_outfit.isItem())
-        return 0;
-
-    if (m_outfit.hasMount())
-        return getMountThingType()->getDisplacementY();
-
-    return Thing::getDisplacementY();
-}
+Point Creature::getDisplacement() const { return m_cachedDisplacement; }
+int Creature::getDisplacementX() const { return m_cachedDisplacement.x; }
+int Creature::getDisplacementY() const { return m_cachedDisplacement.y; }
 
 const Light& Creature::getLight() const
 {
