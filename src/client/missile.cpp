@@ -126,6 +126,7 @@ void Missile::setId(uint32_t id)
         id = 0;
 
     m_clientId = id;
+    m_isValidAndOpaque = m_clientId > 0;
 }
 
 ThingType* Missile::getThingType() const {
