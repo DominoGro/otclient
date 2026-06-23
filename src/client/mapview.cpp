@@ -224,8 +224,10 @@ void MapView::drawCreatureInformation() {
     Position _camera = m_posInfo.camera;
     const bool alwaysTransparent = m_floorViewMode == Otc::ALWAYS_WITH_TRANSPARENCY && _camera.coveredUp(m_posInfo.camera.z - m_floorMin);
     for (const auto& [uid, creature] : g_map.getCreatures()) {
+         if (!m_posInfo.isInRange(creature->getPosition()))
+            continue;
         const auto& tile = creature->getTile();
-        if (!tile || !m_posInfo.isInRange(creature->getPosition()))
+        if (!tile)
             continue;
 
         bool isCovered = tile->isCovered(alwaysTransparent ? m_floorMin : m_cachedFirstVisibleFloor);
