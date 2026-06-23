@@ -126,12 +126,12 @@ void Creature::drawLight(const Point& dest, LightView* lightView) {
             light.color = 215;
         }
     }
-
+ const float scaleFactor = g_drawPool.getScaleFactor();
     if (light.intensity > 0) {
-        lightView->addLightSource(dest + (m_walkOffset + (Point(g_gameConfig.getSpriteSize() / 2))) * g_drawPool.getScaleFactor(), light);
+         lightView->addLightSource(dest + (m_walkOffset + (Point(g_gameConfig.getSpriteSize() / 2))) * scaleFactor, light);
     }
 
-    drawAttachedLightEffect(dest + m_walkOffset * g_drawPool.getScaleFactor(), lightView);
+    drawAttachedLightEffect(dest + m_walkOffset * scaleFactor, lightView);
 
     for (const auto& paperdoll : m_paperdolls)
         paperdoll->drawLight(dest, m_outfit.hasMount(), lightView);
