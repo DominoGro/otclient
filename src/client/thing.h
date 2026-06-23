@@ -244,7 +244,7 @@ protected:
  uint8_t m_stackPriority{ COMMON_ITEMS };
 bool m_isSingleDimension{ false };
 uint8_t m_cachedElevation{ 0 };
-bool m_isValidAndOpaque{ false };
+bool m_isValidAndOpaque{ true };
 private:
     void lua_setMarked(const std::string_view color) { setMarked(Color(color)); }
     void lua_setHighlight(const std::string_view color) { setHighlight(Color(color)); }
