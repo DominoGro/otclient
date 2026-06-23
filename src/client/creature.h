@@ -312,7 +312,7 @@ private:
 
     Outfit m_outfit;
     Light m_light;
-
+Light m_typeLight;
     Color m_timedSquareColor{ Color::white };
     Color m_staticSquareColor{ Color::white };
     Color m_informationColor{ Color::white };
