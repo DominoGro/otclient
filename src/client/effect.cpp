@@ -41,11 +41,16 @@ void Effect::draw(const Point& dest, const bool drawThings, LightView* lightView
     // It only starts to draw when the first effect as it is about to end.
     if (m_animationTimer.ticksElapsed() < m_timeToStartDrawing)
         return;
+ auto* thingType = getThingType();
+    if (!thingType || thingType->isNull() || thingType->getAnimationPhases() == 0)
+        return;
 
+    const int numPatternX = thingType->getNumPatternX();
+    const int numPatternY = thingType->getNumPatternY();
     int animationPhase = 0;
     if (canAnimate()) {
         if (g_game.getFeature(Otc::GameEnhancedAnimations)) {
-            const auto* animator = getThingType()->getIdleAnimator();
+            const auto* animator = thingType->getIdleAnimator();
             if (!animator)
                 return;
 
@@ -58,35 +63,28 @@ void Effect::draw(const Point& dest, const bool drawThings, LightView* lightView
                 ticks <<= 2;
             }
 
-            animationPhase = std::min<int>(static_cast<int>(m_animationTimer.ticksElapsed() / ticks), getAnimationPhases() - 1);
+            animationPhase = std::min<int>(static_cast<int>(m_animationTimer.ticksElapsed() / ticks), thingType->getAnimationPhases() - 1);
         }
     }
 
     const int offsetX = m_position.x - g_map.getCentralPosition().x;
     const int offsetY = m_position.y - g_map.getCentralPosition().y;
 
-    int xPattern = static_cast<unsigned>(offsetX) % getNumPatternX();
-    xPattern = 1 - xPattern - getNumPatternX();
-    if (xPattern < 0) xPattern += getNumPatternX();
+    int xPattern = static_cast<unsigned>(offsetX) % numPatternX;
+    xPattern = 1 - xPattern - numPatternX;
+    if (xPattern < 0) xPattern += numPatternX;
 
-    int yPattern = static_cast<unsigned>(offsetY) % getNumPatternY();
+   int yPattern = static_cast<unsigned>(offsetY) % numPatternY;
 
     if (g_game.getFeature(Otc::GameMapOldEffectRendering)) {
-        xPattern = offsetX % getNumPatternX();
+       xPattern = offsetX % numPatternX;
         if (xPattern < 0)
-            xPattern += getNumPatternX();
+            xPattern += numPatternX;
 
-        yPattern = offsetY % getNumPatternY();
+        yPattern = offsetY % numPatternY;
         if (yPattern < 0)
-            yPattern += getNumPatternY();
+            yPattern += numPatternY;
     }
-
-    // Check if the effect can actually be drawn before setting opacity/shader
-    // This prevents stale state from affecting subsequent draws when this effect
-    // returns early due to missing texture or invalid state
-    auto* thingType = getThingType();
-    if (!thingType || thingType->isNull() || thingType->getAnimationPhases() == 0)
-        return;
 
     if (g_drawPool.getCurrentType() == DrawPoolType::MAP) {
         if (drawThings) {
