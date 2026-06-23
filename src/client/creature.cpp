@@ -81,22 +81,24 @@ void Creature::draw(const Point& dest, const bool drawThings, LightView* /*light
         return;
 
     if (drawThings) {
+        const float scaleFactor = g_drawPool.getScaleFactor();
+        const auto& disp = m_cachedDisplacement;
         if (m_showTimedSquare) {
-            g_drawPool.addBoundingRect(Rect(dest + (m_walkOffset - getDisplacement() + 2) * g_drawPool.getScaleFactor(), Size(28 * g_drawPool.getScaleFactor())), m_timedSquareColor, std::max<int>(static_cast<int>(2 * g_drawPool.getScaleFactor()), 1));
+             g_drawPool.addBoundingRect(Rect(dest + (m_walkOffset - disp + 2) * scaleFactor, Size(28 * scaleFactor)), m_timedSquareColor, std::max<int>(static_cast<int>(2 * scaleFactor), 1));
         }
 
         if (m_showStaticSquare) {
-            g_drawPool.addBoundingRect(Rect(dest + (m_walkOffset - getDisplacement()) * g_drawPool.getScaleFactor(), Size(g_gameConfig.getSpriteSize() * g_drawPool.getScaleFactor())), m_staticSquareColor, std::max<int>(static_cast<int>(2 * g_drawPool.getScaleFactor()), 1));
+            g_drawPool.addBoundingRect(Rect(dest + (m_walkOffset - disp) * scaleFactor, Size(g_gameConfig.getSpriteSize() * scaleFactor)), m_staticSquareColor, std::max<int>(static_cast<int>(2 * scaleFactor), 1));
         }
 
-        auto _dest = dest + m_walkOffset * g_drawPool.getScaleFactor();
+       auto _dest = dest + m_walkOffset * scaleFactor;
 
-        auto oldScaleFactor = g_drawPool.getScaleFactor();
+       const float oldScaleFactor = scaleFactor;
 
         g_drawPool.setScaleFactor(getScaleFactor() + (oldScaleFactor - 1.f));
 
         if (oldScaleFactor != g_drawPool.getScaleFactor()) {
-            _dest -= ((Point(g_gameConfig.getSpriteSize()) + getDisplacement()) / 2) * (g_drawPool.getScaleFactor() - oldScaleFactor);
+              _dest -= ((Point(g_gameConfig.getSpriteSize()) + disp) / 2) * (g_drawPool.getScaleFactor() - oldScaleFactor);
         }
 
         internalDraw(_dest);
