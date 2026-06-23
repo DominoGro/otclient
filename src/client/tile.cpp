@@ -114,29 +114,27 @@ void Tile::draw(const Point& dest, const int flags, LightView* lightView)
 
 void Tile::drawLight(const Point& dest, LightView* lightView) {
     uint8_t drawElevation = 0;
-    
-        //for(int i = 0, sz = static_cast<int>(m_things.size()); i < sz; ++i){
-          //  if(i >= m_firstCreatureIndex && i <= m_lastCreatureIndex && m_firstCreatureIndex >= 0)
-                //continue;
+     const float scaleFactor = g_drawPool.getScaleFactor();
+      
      const int sz = static_cast<int>(m_things.size());
     const int creatureBegin = (m_firstCreatureIndex >= 0) ? m_firstCreatureIndex : sz;
     const int creatureEnd   = (m_lastCreatureIndex  >= 0) ? m_lastCreatureIndex + 1 : sz;
 
     for (int i = 0; i < creatureBegin; ++i) {
             const auto& thing = m_things[i];
-        thing->drawLight(dest - drawElevation * g_drawPool.getScaleFactor(), lightView);
+       thing->drawLight(dest - drawElevation * scaleFactor, lightView);
         updateElevation(thing, drawElevation);
     }
 for (int i = creatureEnd; i < sz; ++i) {
         const auto& thing = m_things[i];
-        thing->drawLight(dest - drawElevation * g_drawPool.getScaleFactor(), lightView);
+         thing->drawLight(dest - drawElevation * scaleFactor, lightView);
         updateElevation(thing, drawElevation);
     }
     drawCreature(dest, Otc::DrawLights, true, drawElevation, lightView);
 
     if (m_effects) {
         for (const auto& effect : *m_effects)
-            effect->draw(dest - drawElevation * g_drawPool.getScaleFactor(), false, lightView);
+            effect->draw(dest - drawElevation * scaleFactor, false, lightView);
     }
 
     drawAttachedLightEffect(dest, lightView);
@@ -169,16 +167,21 @@ void Tile::drawCreature(const Point& dest, const int flags, const bool forceDraw
     }
 
     g_drawPool.setDrawOrder(DrawOrder::THIRD);
+    if (!m_walkingCreatures.empty()) {
+    const float scaleFactor = g_drawPool.getScaleFactor();
+    const int spriteSize = g_gameConfig.getSpriteSize();
     for (const auto& creature : m_walkingCreatures) {
+        const int drawElevC = creature->getDrawElevation();
         const auto& cDest = Point(
-            dest.x + ((creature->getPosition().x - m_position.x) * g_gameConfig.getSpriteSize() - creature->getDrawElevation()) * g_drawPool.getScaleFactor(),
-            dest.y + ((creature->getPosition().y - m_position.y) * g_gameConfig.getSpriteSize() - creature->getDrawElevation()) * g_drawPool.getScaleFactor()
+           dest.x + ((creature->getPosition().x - m_position.x) * spriteSize - drawElevC) * scaleFactor,
+            dest.y + ((creature->getPosition().y - m_position.y) * spriteSize - drawElevC) * scaleFactor
         );
 
         if (flags == Otc::DrawLights)
             creature->drawLight(cDest, lightView);
         else
             creature->draw(cDest, flags & Otc::DrawThings);
+    }
     }
     g_drawPool.resetDrawOrder();
 
