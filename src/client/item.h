@@ -102,6 +102,7 @@ public:
     uint8_t getTier() { return m_tier; }
 
     bool isValid() { return getThingType() != nullptr; }
+ bool hasLight() const override { return m_hasLight; }
 
     bool hasWearOut() { return Thing::hasWearOut(); }
     bool hasClockExpire() { return Thing::hasClockExpire(); }
