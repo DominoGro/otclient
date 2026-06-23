@@ -396,7 +396,7 @@ void Creature::internalDraw(Point dest, const Color& color)
         // outfit is a real creature
         if (m_outfit.isCreature()) {
             if (m_outfit.hasMount()) {
-                dest -= getMountThingType()->getDisplacement() * g_drawPool.getScaleFactor();
+                dest -= m_cachedMountDisplacement * g_drawPool.getScaleFactor();
 
                 if (!replaceColorShader && hasMountShader()) {
                     g_drawPool.setShaderProgram(g_shaders.getShaderById(m_mountShaderId), true/*, [this]()-> void {
@@ -927,12 +927,15 @@ void Creature::setOutfit(const Outfit& outfit, bool fireEvent)
     else if (m_outfit.isItem())
         m_cachedDisplacement = {};
     else if (m_outfit.hasMount()) {
-        if (const auto* mountType = getMountThingType())
-            m_cachedDisplacement = mountType->getDisplacement();
-        else
-            m_cachedDisplacement = thingType->getDisplacement();
+       if (const auto* mountType = getMountThingType()) {
+            m_cachedMountDisplacement = mountType->getDisplacement();
+        } else {
+            m_cachedMountDisplacement = {};
+        }
+        m_cachedDisplacement = thingType->getDisplacement();
     } else {
         m_cachedDisplacement = thingType->getDisplacement();
+        m_cachedMountDisplacement = {};
     }
 
     if (m_outfit.hasMount()) {
