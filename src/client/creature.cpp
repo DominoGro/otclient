@@ -940,7 +940,7 @@ void Creature::setOutfit(const Outfit& outfit, bool fireEvent)
         m_cachedDisplacement = thingType->getDisplacement();
         m_cachedMountDisplacement = {};
     }
-
+m_typeLight = thingType->getLight();
     if (m_outfit.hasMount()) {
         m_numPatternZ = std::min<int>(1, getNumPatternZ() - 1);
     }
@@ -1165,8 +1165,7 @@ int Creature::getDisplacementY() const { return m_cachedDisplacement.y; }
 
 const Light& Creature::getLight() const
 {
-    const auto& light = Thing::getLight();
-    return m_light.color > 0 && m_light.intensity >= light.intensity ? m_light : light;
+    return m_light.color > 0 && m_light.intensity >= m_typeLight.intensity ? m_light : m_typeLight;
 }
 
 ThingType* Creature::getThingType() const {
