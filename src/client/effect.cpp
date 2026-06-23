@@ -153,6 +153,7 @@ void Effect::setId(const uint32_t id)
         return;
 
     m_clientId = id;
+     m_isValidAndOpaque = m_clientId > 0;
 }
 
 void Effect::setPosition(const Position& position, const uint8_t stackPos)
