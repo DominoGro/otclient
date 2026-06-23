@@ -351,6 +351,7 @@ private:
 
     // Mount Shader
     uint8_t m_mountShaderId{ 0 };
+Point m_cachedDisplacement;
 
     Otc::Direction m_walkTurnDirection{ Otc::InvalidDirection };
     Otc::Direction m_lastStepDirection{ Otc::InvalidDirection };
