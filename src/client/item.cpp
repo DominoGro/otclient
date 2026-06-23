@@ -275,8 +275,9 @@ void Item::setId(uint32_t id)
 #endif
 
     m_clientId = id;
+    m_cachedThingType = g_things.getRawThingType(m_clientId, ThingCategoryItem);
     // Cache per-type flags used in hot draw paths.
-    if (const auto* t = getThingType()) {
+      if (const auto* t = m_cachedThingType) {
         m_isValidAndOpaque = m_clientId > 0 && t->getOpacity() > Fw::MIN_ALPHA;
    
 // Cache per-type flags used in hot draw paths.
@@ -312,7 +313,7 @@ void Item::setId(uint32_t id)
 }
 
 ThingType* Item::getThingType() const {
-    return g_things.getRawThingType(m_clientId, ThingCategoryItem);
+     return m_cachedThingType;
 }
 
 #ifdef FRAMEWORK_EDITOR
