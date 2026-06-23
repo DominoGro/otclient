@@ -373,13 +373,13 @@ void Creature::internalDraw(Point dest, const Color& color)
     };*/
 
     Point originalDest = dest;
-
+const float scaleFactor = g_drawPool.getScaleFactor();
     if (!m_jumpOffset.isNull()) {
-        const auto& jumpOffset = m_jumpOffset * g_drawPool.getScaleFactor();
+        const auto& jumpOffset = m_jumpOffset * scaleFactor;
         dest -= Point(std::round(jumpOffset.x), std::round(jumpOffset.y));
     } else if (m_bounce.height > 0 && m_bounce.speed > 0) {
-        const auto minHeight = m_bounce.minHeight * g_drawPool.getScaleFactor();
-        const auto height = m_bounce.height * g_drawPool.getScaleFactor();
+        const auto minHeight = m_bounce.minHeight * scaleFactor;
+        const auto height = m_bounce.height * scaleFactor;
         dest -= minHeight + (height - std::abs(height - static_cast<int>(m_bounce.timer.ticksElapsed() / (m_bounce.speed / 100.f)) % static_cast<int>(height * 2)));
     }
 
@@ -398,7 +398,7 @@ void Creature::internalDraw(Point dest, const Color& color)
         // outfit is a real creature
         if (m_outfit.isCreature()) {
             if (m_outfit.hasMount()) {
-                dest -= m_cachedMountDisplacement * g_drawPool.getScaleFactor();
+                dest -= m_cachedMountDisplacement * scaleFactor;
 
                 if (!replaceColorShader && hasMountShader()) {
                     g_drawPool.setShaderProgram(g_shaders.getShaderById(m_mountShaderId), true/*, [this]()-> void {
@@ -408,7 +408,7 @@ void Creature::internalDraw(Point dest, const Color& color)
                 }
                 getMountThingType()->draw(dest, 0, m_numPatternX, 0, 0, getCurrentAnimationPhase(true), color);
 
-                dest += getDisplacement() * g_drawPool.getScaleFactor();
+                dest += m_cachedDisplacement * scaleFactor;
             }
 
             const auto& datType = getThingType();
@@ -440,7 +440,7 @@ void Creature::internalDraw(Point dest, const Color& color)
             };
 
             if (useFramebuffer) {
-                const int size = static_cast<int>(g_gameConfig.getSpriteSize() * std::max<int>(datType->getSize().area(), 2) * g_drawPool.getScaleFactor());
+                const int size = static_cast<int>(g_gameConfig.getSpriteSize() * std::max<int>(datType->getSize().area(), 2) * scaleFactor);
                 const auto& p = (Point(size) - Point(datType->getExactHeight())) / 2;
                 const auto& destFB = Rect(dest - p, Size{ size });
 
@@ -480,7 +480,8 @@ void Creature::internalDraw(Point dest, const Color& color)
 
             if (!replaceColorShader && hasShader())
                 g_drawPool.setShaderProgram(g_shaders.getShaderById(m_shaderId), true/*, shaderAction*/);
-            getThingType()->draw(dest - (getDisplacement() * g_drawPool.getScaleFactor()), 0, 0, 0, 0, animationPhase, color);
+            itemDatType->draw(dest - (m_cachedDisplacement * scaleFactor), 0, 0, 0, 0, animationPhase, color);
+            
         }
     }
 
