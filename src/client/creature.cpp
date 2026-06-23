@@ -411,10 +411,11 @@ void Creature::internalDraw(Point dest, const Color& color)
 
             const auto& datType = getThingType();
             const bool useFramebuffer = !replaceColorShader && hasShader() && g_shaders.getShaderById(m_shaderId)->useFramebuffer();
-
+            const int numPatternY = datType->getNumPatternY();
+            const int layers = datType->getLayers();
             const auto& drawCreature = [&](const Point& dest) {
                 // yPattern => creature addon
-                for (int yPattern = 0; yPattern < getNumPatternY(); ++yPattern) {
+                for (int yPattern = 0; yPattern < numPatternY; ++yPattern) {
                     // continue if we dont have this addon
                     if (yPattern > 0 && !(m_outfit.getAddons() & (1 << (yPattern - 1))))
                         continue;
@@ -425,7 +426,7 @@ void Creature::internalDraw(Point dest, const Color& color)
 
                     datType->draw(dest, 0, m_numPatternX, yPattern, m_numPatternZ, animationPhase, color);
 
-                    if (m_drawOutfitColor && !replaceColorShader && getLayers() > 1) {
+                    if (m_drawOutfitColor && !replaceColorShader && layers > 1) {
                         g_drawPool.setCompositionMode(CompositionMode::MULTIPLY);
                         datType->draw(dest, SpriteMaskYellow, m_numPatternX, yPattern, m_numPatternZ, animationPhase, m_outfit.getHeadColor());
                         datType->draw(dest, SpriteMaskRed, m_numPatternX, yPattern, m_numPatternZ, animationPhase, m_outfit.getBodyColor());
@@ -454,7 +455,8 @@ void Creature::internalDraw(Point dest, const Color& color)
 
             // outfit is a creature imitating an item or the invisible effect
         } else {
-            int animationPhases = getThingType()->getAnimationPhases();
+            const auto* itemDatType = getThingType();
+            int animationPhases = itemDatType->getAnimationPhases();
             int animateTicks = g_gameConfig.getItemTicksPerFrame();
 
             // when creature is an effect we cant render the first and last animation phase,
@@ -465,7 +467,7 @@ void Creature::internalDraw(Point dest, const Color& color)
             }
 
             int animationPhase = 0;
-            if (auto* animator = getThingType()->getIdleAnimator(); animator && m_outfit.isItem()) {
+            if (auto* animator = itemDatType->getIdleAnimator(); animator && m_outfit.isItem()) {
                 animationPhase = animator->getPhase();
             } else if (animationPhases > 1) {
                 animationPhase = (g_clock.millis() % (static_cast<long long>(animateTicks) * animationPhases)) / animateTicks;
