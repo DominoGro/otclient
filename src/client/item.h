@@ -192,6 +192,7 @@ private:
 bool m_hasLight{ false };
  uint8_t m_animationPhases{ 0 };
     Animator* m_cachedIdleAnimator{ nullptr };
+ThingType* m_cachedThingType{ nullptr };
 #ifdef FRAMEWORK_EDITOR
     uint16_t m_serverId{ 0 };
     stdext::dynamic_storage<ItemAttr> m_attribs;
