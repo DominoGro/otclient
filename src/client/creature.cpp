@@ -678,9 +678,9 @@ void Creature::updateWalkAnimation()
 {
     if (!m_outfit.isCreature())
         return;
-
+const bool enhancedAnim = g_game.getFeature(Otc::GameEnhancedAnimations);
     int footAnimPhases = m_outfit.hasMount() ? getMountThingType()->getAnimationPhases() : getAnimationPhases();
-    if (!g_game.getFeature(Otc::GameEnhancedAnimations) && footAnimPhases > 2) {
+    if (!enhancedAnim && footAnimPhases > 2) {
         --footAnimPhases;
     }
 
@@ -698,7 +698,7 @@ void Creature::updateWalkAnimation()
     const int maxFootDelay = footAnimPhases > 2 ? 80 : 205;
     int footAnimDelay = footAnimPhases;
 
-    if (g_game.getFeature(Otc::GameEnhancedAnimations) && footAnimPhases > 2) {
+     if (enhancedAnim && footAnimPhases > 2) {
         minFootDelay += 10;
         if (footAnimDelay > 1)
             footAnimDelay /= 1.5;
@@ -718,15 +718,16 @@ void Creature::updateWalkAnimation()
 void Creature::updateWalkOffset(const uint8_t totalPixelsWalked)
 {
     m_walkOffset = {};
+     const int spriteSize = g_gameConfig.getSpriteSize();
     if (m_direction == Otc::North || m_direction == Otc::NorthEast || m_direction == Otc::NorthWest)
-        m_walkOffset.y = g_gameConfig.getSpriteSize() - totalPixelsWalked;
+        m_walkOffset.y = spriteSize - totalPixelsWalked;
     else if (m_direction == Otc::South || m_direction == Otc::SouthEast || m_direction == Otc::SouthWest)
-        m_walkOffset.y = totalPixelsWalked - g_gameConfig.getSpriteSize();
+      m_walkOffset.y = totalPixelsWalked - spriteSize;
 
     if (m_direction == Otc::East || m_direction == Otc::NorthEast || m_direction == Otc::SouthEast)
-        m_walkOffset.x = totalPixelsWalked - g_gameConfig.getSpriteSize();
+         m_walkOffset.x = totalPixelsWalked - spriteSize;
     else if (m_direction == Otc::West || m_direction == Otc::NorthWest || m_direction == Otc::SouthWest)
-        m_walkOffset.x = g_gameConfig.getSpriteSize() - totalPixelsWalked;
+        m_walkOffset.x = spriteSize - totalPixelsWalked;
 }
 
 void Creature::updateWalkingTile()
@@ -734,16 +735,18 @@ void Creature::updateWalkingTile()
     // determine new walking tile
     TilePtr newWalkingTile;
 
-    const auto displacementX = g_game.getFeature(Otc::GameNegativeOffset) ? 0 : getDisplacementX();
-    const auto displacementY = g_game.getFeature(Otc::GameNegativeOffset) ? 0 : getDisplacementY();
+    const int spriteSize = g_gameConfig.getSpriteSize();
+    const bool negativeOffset = g_game.getFeature(Otc::GameNegativeOffset);
+    const auto displacementX = negativeOffset ? 0 : m_cachedDisplacement.x;
+    const auto displacementY = negativeOffset ? 0 : m_cachedDisplacement.y;
 
-    const Rect virtualCreatureRect(g_gameConfig.getSpriteSize() + (m_walkOffset.x - displacementX),
-        g_gameConfig.getSpriteSize() + (m_walkOffset.y - displacementY),
-        g_gameConfig.getSpriteSize(), g_gameConfig.getSpriteSize());
+    const Rect virtualCreatureRect(spriteSize + (m_walkOffset.x - displacementX),
+        spriteSize + (m_walkOffset.y - displacementY),
+        spriteSize, spriteSize);
 
     for (int xi = -1; xi <= 1 && !newWalkingTile; ++xi) {
         for (int yi = -1; yi <= 1 && !newWalkingTile; ++yi) {
-            Rect virtualTileRect((xi + 1) * g_gameConfig.getSpriteSize(), (yi + 1) * g_gameConfig.getSpriteSize(), g_gameConfig.getSpriteSize(), g_gameConfig.getSpriteSize());
+           Rect virtualTileRect((xi + 1) * spriteSize, (yi + 1) * spriteSize, spriteSize, spriteSize);
 
             // only render creatures where bottom right is inside tile rect
             if (virtualTileRect.contains(virtualCreatureRect.bottomRight())) {
@@ -790,9 +793,10 @@ void Creature::nextWalkUpdate()
 
 void Creature::updateWalk()
 {
-    const float walkTicksPerPixel = getStepDuration(true) / static_cast<float>(g_gameConfig.getSpriteSize());
+     const int spriteSize = g_gameConfig.getSpriteSize();
+    const float walkTicksPerPixel = getStepDuration(true) / static_cast<float>(spriteSize);
 
-    const int totalPixelsWalked = std::min<int>(m_walkTimer.ticksElapsed() / walkTicksPerPixel, g_gameConfig.getSpriteSize());
+     const int totalPixelsWalked = std::min<int>(m_walkTimer.ticksElapsed() / walkTicksPerPixel, spriteSize);
 
     // needed for paralyze effect
     m_walkedPixels = std::max<int>(m_walkedPixels, totalPixelsWalked);
@@ -807,7 +811,7 @@ void Creature::updateWalk()
         g_map.notificateCameraMove(m_walkOffset);
     }
 
-    if (m_walkedPixels == g_gameConfig.getSpriteSize()) {
+    if (m_walkedPixels == spriteSize) {
         terminateWalk();
     }
 }
